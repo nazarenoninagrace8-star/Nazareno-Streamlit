@@ -253,3 +253,83 @@ st.markdown(
     '<div class="footer-note">Niña Grace Nazareno &nbsp;|&nbsp; Student Profile</div>',
     unsafe_allow_html=True,
 )
+
+# ---------------------------------------------------------------- EXPLORE MORE
+import random
+
+st.write("")
+st.markdown(
+    '<div class="section-title" style="font-size:1.8rem">Explore More</div><hr class="rule">',
+    unsafe_allow_html=True,
+)
+
+OPENINGS = [
+    ("Italian Game", "A classic that develops pieces quickly and fights for the center."),
+    ("Sicilian Defense", "A popular reply to 1.e4 that leads to sharp, unbalanced play."),
+    ("Queen's Gambit", "White offers a pawn in order to gain control of the center."),
+    ("Ruy Lopez", "One of the oldest openings, built on steady, patient pressure."),
+    ("London System", "A solid setup that is easy to learn and hard to break down."),
+    ("Caro-Kann Defense", "A sturdy defense known for its reliable pawn structure."),
+]
+if "opening_idx" not in st.session_state:
+    st.session_state.opening_idx = 0
+
+
+def chessboard_html():
+    squares = ""
+    for r in range(8):
+        for c in range(8):
+            color = "#F3E3E5" if (r + c) % 2 == 0 else "#C98B94"
+            squares += f'<div style="background:{color}"></div>'
+    return (
+        '<div style="display:grid;grid-template-columns:repeat(8,1fr);'
+        "width:260px;height:260px;border:4px solid #4A3B3F;border-radius:8px;"
+        'overflow:hidden;box-shadow:0 8px 24px rgba(201,139,148,.25)">'
+        f"{squares}</div>"
+    )
+
+
+tab_chess, tab_goals, tab_hello = st.tabs(["Chess Corner", "Goals", "Say Hello"])
+
+with tab_chess:
+    c1, c2 = st.columns([1, 1.3], gap="large")
+    with c1:
+        st.markdown(chessboard_html(), unsafe_allow_html=True)
+    with c2:
+        name, desc = OPENINGS[st.session_state.opening_idx]
+        st.markdown(
+            f"""
+<div class="section">
+<div class="stat-label">Opening of the moment</div>
+<div class="section-title" style="margin-top:0.3rem">{name}</div>
+<hr class="rule">
+<p>{desc}</p>
+</div>
+""",
+            unsafe_allow_html=True,
+        )
+        st.write("")
+        if st.button("Show another opening"):
+            st.session_state.opening_idx = random.choice(
+                [i for i in range(len(OPENINGS)) if i != st.session_state.opening_idx]
+            )
+            st.rerun()
+
+with tab_goals:
+    st.markdown(
+        """
+<div class="section">
+<div class="row"><span>Academic</span><span>Complete my Bachelor of Science in Mechanical Engineering</span></div>
+<div class="row"><span>Skills</span><span>Keep learning and building practical engineering knowledge</span></div>
+<div class="row"><span>Chess</span><span>Keep improving, one game at a time</span></div>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
+
+with tab_hello:
+    visitor = st.text_input("Leave your name", placeholder="Your name here")
+    if st.button("Say hello"):
+        st.balloons()
+        who = visitor.strip() if visitor.strip() else "visitor"
+        st.success(f"Thank you for visiting, {who}. It is lovely to meet you.")
