@@ -1,6 +1,7 @@
 
 import base64
 import random
+import textwrap
 from pathlib import Path
 
 import streamlit as st
@@ -172,6 +173,13 @@ p, label {
     font-size: 29px;
     font-weight: 700;
     color: white;
+}
+
+.stat-label {
+    color: #AAAAAA;
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
 }
 
 .rule {
@@ -347,7 +355,7 @@ else:
     <div class="avatar">NN</div>
     """
 
-st.markdown(f"""
+st.markdown(textwrap.dedent(f"""
 <div class="hero">
 
     {image_html}
@@ -379,7 +387,7 @@ st.markdown(f"""
     </div>
 
 </div>
-""", unsafe_allow_html=True)
+"""), unsafe_allow_html=True)
 
 
 # ==========================================
@@ -390,7 +398,7 @@ left, right = st.columns([1.15, 1], gap="medium")
 
 with left:
 
-    st.markdown(f"""
+    st.markdown(textwrap.dedent(f"""
     <div class="section">
 
         <div class="section-title">
@@ -412,12 +420,12 @@ with left:
         <p>{PROFILE["chess"]}</p>
 
     </div>
-    """, unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
 
 
 with right:
 
-    st.markdown(f"""
+    st.markdown(textwrap.dedent(f"""
     <div class="section">
 
         <div class="section-title">
@@ -452,7 +460,7 @@ with right:
         </div>
 
     </div>
-    """, unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
 
 
 # ==========================================
@@ -623,18 +631,18 @@ def chessboard_html(position):
             </div>
             """
 
-    return f"""
+    return textwrap.dedent(f"""
     <div class="chessboard">
         {squares}
     </div>
-    """
+    """)
 
 
 # ==========================================
 # EXPLORE MORE
 # ==========================================
 
-st.markdown("""
+st.markdown(textwrap.dedent("""
 <div style="margin-top: 35px;">
 
     <div class="section-title">
@@ -644,7 +652,7 @@ st.markdown("""
     <hr class="rule">
 
 </div>
-""", unsafe_allow_html=True)
+"""), unsafe_allow_html=True)
 
 
 # ==========================================
@@ -691,7 +699,7 @@ with tab_chess:
 
     with chess_right:
 
-        st.markdown(f"""
+        st.markdown(textwrap.dedent(f"""
         <div class="section">
 
             <div class="stat-label">
@@ -719,7 +727,7 @@ with tab_chess:
             </p>
 
         </div>
-        """, unsafe_allow_html=True)
+        """), unsafe_allow_html=True)
 
         st.write("")
 
@@ -747,7 +755,7 @@ with tab_chess:
 
 with tab_goals:
 
-    st.markdown("""
+    st.markdown(textwrap.dedent("""
     <div class="section">
 
         <div class="section-title">
@@ -784,7 +792,7 @@ with tab_goals:
         </div>
 
     </div>
-    """, unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
 
 
 # ==========================================
@@ -793,7 +801,7 @@ with tab_goals:
 
 with tab_hello:
 
-    st.markdown("""
+    st.markdown(textwrap.dedent("""
     <div class="section">
 
         <div class="section-title">
@@ -808,7 +816,7 @@ with tab_hello:
         </p>
 
     </div>
-    """, unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
 
     st.write("")
 
@@ -838,7 +846,7 @@ with tab_hello:
 # FOOTER
 # ==========================================
 
-st.markdown("""
+st.markdown(textwrap.dedent("""
 <div class="footer-note">
 
     NIÑA GRACE NAZARENO
@@ -846,4 +854,4 @@ st.markdown("""
     STUDENT PROFILE
 
 </div>
-""", unsafe_allow_html=True)
+"""), unsafe_allow_html=True)
