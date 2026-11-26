@@ -60,7 +60,7 @@ def initials(name):
 
 
 # ============================================================
-# DESIGN / CSS
+# CSS DESIGN
 # ============================================================
 
 st.markdown(
@@ -406,22 +406,19 @@ else:
     avatar_html = f'<div class="avatar">{initials(PROFILE["name"])}</div>'
 
 st.markdown(
-    f"""
-<div class="hero">
-    {avatar_html}
-    <div>
-        <div class="hero-eyebrow">My Profile</div>
-        <div class="hero-name">{PROFILE["name"]}</div>
-        <div class="hero-sub">{PROFILE["tagline"]}</div>
-
-        <div class="pill-row">
-            <span class="pill">{PROFILE["age"]} years old</span>
-            <span class="pill alt">{PROFILE["address"]}</span>
-            <span class="pill">{PROFILE["interest"]}</span>
-        </div>
-    </div>
+    f"""<div class="hero">
+{avatar_html}
+<div>
+<div class="hero-eyebrow">My Profile</div>
+<div class="hero-name">{PROFILE["name"]}</div>
+<div class="hero-sub">{PROFILE["tagline"]}</div>
+<div class="pill-row">
+<span class="pill">{PROFILE["age"]} years old</span>
+<span class="pill alt">{PROFILE["address"]}</span>
+<span class="pill">{PROFILE["interest"]}</span>
 </div>
-""",
+</div>
+</div>""",
     unsafe_allow_html=True,
 )
 
@@ -434,55 +431,29 @@ left, right = st.columns([1.15, 1], gap="medium")
 
 with left:
     st.markdown(
-        f"""
-<div class="section">
-    <div class="section-title">About Me</div>
-    <hr class="rule">
-    <p>{PROFILE["about"]}</p>
-
-    <div class="gap"></div>
-
-    <div class="section-title">Beyond the Classroom</div>
-    <hr class="rule">
-    <p>{PROFILE["chess"]}</p>
-</div>
-""",
+        f"""<div class="section">
+<div class="section-title">About Me</div>
+<hr class="rule">
+<p>{PROFILE["about"]}</p>
+<div class="gap"></div>
+<div class="section-title">Beyond the Classroom</div>
+<hr class="rule">
+<p>{PROFILE["chess"]}</p>
+</div>""",
         unsafe_allow_html=True,
     )
 
 with right:
     st.markdown(
-        f"""
-<div class="section">
-    <div class="section-title">Personal Details</div>
-    <hr class="rule">
-
-    <div class="row">
-        <span>Full Name</span>
-        <span>{PROFILE["name"]}</span>
-    </div>
-
-    <div class="row">
-        <span>Age</span>
-        <span>{PROFILE["age"]}</span>
-    </div>
-
-    <div class="row">
-        <span>Address</span>
-        <span>{PROFILE["address"]}</span>
-    </div>
-
-    <div class="row">
-        <span>Course</span>
-        <span>{PROFILE["program"]}</span>
-    </div>
-
-    <div class="row">
-        <span>Interest</span>
-        <span>{PROFILE["interest"]}</span>
-    </div>
-</div>
-""",
+        f"""<div class="section">
+<div class="section-title">Personal Details</div>
+<hr class="rule">
+<div class="row"><span>Full Name</span><span>{PROFILE["name"]}</span></div>
+<div class="row"><span>Age</span><span>{PROFILE["age"]}</span></div>
+<div class="row"><span>Address</span><span>{PROFILE["address"]}</span></div>
+<div class="row"><span>Course</span><span>{PROFILE["program"]}</span></div>
+<div class="row"><span>Interest</span><span>{PROFILE["interest"]}</span></div>
+</div>""",
         unsafe_allow_html=True,
     )
 
@@ -547,6 +518,10 @@ GLYPHS = {
 }
 
 
+# ============================================================
+# CHESSBOARD FUNCTIONS
+# ============================================================
+
 def start_position():
     pos = {}
     back = ["R", "N", "B", "Q", "K", "B", "N", "R"]
@@ -566,6 +541,7 @@ def chessboard_html(pos):
     for r in range(8):
         for c in range(8):
             sq = "abcdefgh"[c] + str(8 - r)
+
             bg = "#CFE9DC" if (r + c) % 2 == 0 else "#14825F"
 
             piece = ""
@@ -594,8 +570,14 @@ def chessboard_html(pos):
 
 
 # ============================================================
-# EXPLORE MORE - CHESS, GOALS, SAY HELLO
+# EXPLORE MORE TABS
 # ============================================================
+
+st.markdown(
+    '<div class="section-title">Explore More</div>'
+    '<hr class="rule" style="margin-bottom:0">',
+    unsafe_allow_html=True,
+)
 
 tab_chess, tab_goals, tab_hello = st.tabs(
     ["Chess Corner", "Goals", "Say Hello"]
@@ -626,28 +608,18 @@ with tab_chess:
         )
 
     with c2:
+        # FIXED: HTML starts at the beginning of the string.
+        # This prevents Streamlit from displaying it as code.
+
         st.markdown(
-            f"""
-<div class="section">
-    <div class="stat-label">Opening of the moment</div>
-
-    <div class="section-title" style="margin-top:0.2rem">
-        {name}
-    </div>
-
-    <hr class="rule">
-
-    <p>{desc}</p>
-
-    <div class="stat-label" style="margin-top:0.8rem">
-        Moves
-    </div>
-
-    <p style="font-weight:500;color:#E7F3EC">
-        {moves_text}
-    </p>
-</div>
-""",
+            f"""<div class="section">
+<div class="stat-label">Opening of the moment</div>
+<div class="section-title" style="margin-top:0.2rem">{name}</div>
+<hr class="rule">
+<p>{desc}</p>
+<div class="stat-label" style="margin-top:0.8rem">Moves</div>
+<p style="font-weight:500;color:#E7F3EC">{moves_text}</p>
+</div>""",
             unsafe_allow_html=True,
         )
 
@@ -668,32 +640,11 @@ with tab_chess:
 with tab_goals:
 
     st.markdown(
-        """
-<div class="section">
-
-    <div class="row">
-        <span>Academic</span>
-        <span>
-            Complete my Bachelor of Science in Mechanical Engineering
-        </span>
-    </div>
-
-    <div class="row">
-        <span>Skills</span>
-        <span>
-            Keep learning and building practical engineering knowledge
-        </span>
-    </div>
-
-    <div class="row">
-        <span>Chess</span>
-        <span>
-            Keep improving, one game at a time
-        </span>
-    </div>
-
-</div>
-""",
+        """<div class="section">
+<div class="row"><span>Academic</span><span>Complete my Bachelor of Science in Mechanical Engineering</span></div>
+<div class="row"><span>Skills</span><span>Keep learning and building practical engineering knowledge</span></div>
+<div class="row"><span>Chess</span><span>Keep improving, one game at a time</span></div>
+</div>""",
         unsafe_allow_html=True,
     )
 
@@ -724,10 +675,8 @@ with tab_hello:
 # ============================================================
 
 st.markdown(
-    """
-<div class="footer-note">
-    Niña Grace Nazareno &nbsp;|&nbsp; Student Profile
-</div>
-""",
+    """<div class="footer-note">
+Niña Grace Nazareno &nbsp;|&nbsp; Student Profile
+</div>""",
     unsafe_allow_html=True,
 )
