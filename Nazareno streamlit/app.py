@@ -1,14 +1,18 @@
-import streamlit as st
-from pathlib import Path
 
+import streamlit as st
+
+# -----------------------------------------
 # PAGE CONFIGURATION
+# -----------------------------------------
 st.set_page_config(
-    page_title="Niña Grace Nazareno | My Profile",
-    page_icon=None,
-    layout="wide"
+    page_title="Niña Grace Nazareno | Personal Profile",
+    layout="wide",
+    initial_sidebar_state="collapsed"
 )
 
-# CUSTOM CSS
+# -----------------------------------------
+# CUSTOM DESIGN - BLACK AND PINK
+# -----------------------------------------
 st.markdown("""
 <style>
     .stApp {
@@ -17,85 +21,123 @@ st.markdown("""
     }
 
     .block-container {
+        max-width: 1050px;
         padding-top: 3rem;
         padding-bottom: 3rem;
-        max-width: 1100px;
     }
 
     h1, h2, h3 {
-        color: #f5a6c8 !important;
+        color: #f2a1c2 !important;
     }
 
     .welcome {
-        font-size: 17px;
-        color: #f5a6c8;
-        letter-spacing: 3px;
+        color: #f2a1c2;
+        font-size: 14px;
         font-weight: 600;
+        letter-spacing: 4px;
         text-transform: uppercase;
     }
 
-    .name {
-        font-size: 46px;
-        font-weight: 700;
+    .main-name {
         color: #ffffff;
-        margin-bottom: 5px;
+        font-size: 43px;
+        font-weight: 700;
+        line-height: 1.2;
     }
 
     .course {
-        font-size: 18px;
-        color: #f5a6c8;
+        color: #f2a1c2;
+        font-size: 17px;
+        margin-top: 12px;
         margin-bottom: 25px;
     }
 
     .description {
+        color: #cccccc;
         font-size: 16px;
-        line-height: 1.8;
-        color: #d0d0d0;
+        line-height: 1.9;
     }
 
-    .profile-card {
+    .section-title {
+        color: #f2a1c2;
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    .info-card {
         background-color: #1b1b1b;
-        border: 1px solid #4a2940;
-        border-radius: 15px;
-        padding: 25px;
-        margin-top: 15px;
+        border: 1px solid #61364d;
+        border-radius: 12px;
+        padding: 23px;
+        min-height: 130px;
+        margin-bottom: 15px;
     }
 
     .info-label {
-        color: #f5a6c8;
-        font-size: 14px;
+        color: #f2a1c2;
+        font-size: 12px;
         font-weight: 600;
+        letter-spacing: 2px;
         text-transform: uppercase;
-        letter-spacing: 1px;
     }
 
     .info-value {
         color: #ffffff;
         font-size: 17px;
-        margin-bottom: 18px;
+        font-weight: 500;
+        margin-top: 10px;
     }
 
     .divider {
-        border-top: 1px solid #4a2940;
-        margin: 30px 0;
+        border-top: 1px solid #61364d;
+        margin-top: 35px;
+        margin-bottom: 35px;
     }
 
     .footer {
         text-align: center;
         color: #888888;
         font-size: 13px;
-        padding-top: 30px;
+        padding-top: 25px;
+    }
+
+    [data-testid="stFileUploader"] {
+        background-color: #1b1b1b;
+        border: 1px solid #61364d;
+        border-radius: 12px;
+        padding: 15px;
+    }
+
+    [data-testid="stFileUploader"] label {
+        color: #f2a1c2 !important;
     }
 
     [data-testid="stImage"] img {
-        border-radius: 18px;
-        border: 3px solid #f5a6c8;
+        border: 3px solid #f2a1c2;
+        border-radius: 15px;
+    }
+
+    .stButton > button {
+        background-color: #f2a1c2;
+        color: #101010;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .stButton > button:hover {
+        background-color: #ffffff;
+        color: #101010;
+        border: none;
     }
 </style>
 """, unsafe_allow_html=True)
 
 
+# -----------------------------------------
 # HEADER
+# -----------------------------------------
 st.markdown(
     '<p class="welcome">WELCOME TO MY PERSONAL PROFILE</p>',
     unsafe_allow_html=True
@@ -104,126 +146,186 @@ st.markdown(
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
 
-# PROFILE SECTION
-col1, col2 = st.columns([1, 2], gap="large")
+# -----------------------------------------
+# PROFILE PICTURE UPLOADER
+# -----------------------------------------
+st.markdown("## My Profile Picture")
 
-with col1:
-    image_path = Path("profile.jpg")
+uploaded_image = st.file_uploader(
+    "Upload or change your profile picture",
+    type=["jpg", "jpeg", "png"],
+    help="Choose a JPG or PNG image from your device."
+)
 
-    if image_path.exists():
-        st.image(str(image_path), width="stretch")
+# -----------------------------------------
+# PROFILE DISPLAY
+# -----------------------------------------
+profile_col, details_col = st.columns(
+    [1, 2],
+    gap="large"
+)
+
+with profile_col:
+
+    if uploaded_image is not None:
+        st.image(
+            uploaded_image,
+            caption="My Profile Picture",
+            width="stretch"
+        )
     else:
         st.markdown("""
         <div style="
-            background-color:#292029;
-            border:2px solid #f5a6c8;
-            border-radius:18px;
-            height:300px;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            color:#f5a6c8;
-            font-size:65px;
-            font-weight:bold;">
-            NGN
+            height: 300px;
+            background-color: #1b1b1b;
+            border: 2px dashed #f2a1c2;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #f2a1c2;
+            font-size: 16px;
+            padding: 20px;">
+            YOUR PROFILE PICTURE<br>
+            <span style="font-size:13px;color:#aaaaaa;">
+            Upload your photo above
+            </span>
         </div>
         """, unsafe_allow_html=True)
 
-with col2:
+
+with details_col:
+
     st.markdown(
-        '<div class="name">Niña Grace Nazareno</div>',
+        '<div class="main-name">Niña Grace Nazareno</div>',
         unsafe_allow_html=True
     )
 
     st.markdown(
-        '<div class="course">2nd Year | Bachelor of Science in Mechanical Engineering</div>',
+        '<div class="course">2nd Year Bachelor of Science in Mechanical Engineering</div>',
         unsafe_allow_html=True
     )
 
     st.markdown("""
     <p class="description">
         Hello! Welcome to my personal profile.
-        I am Niña Grace Nazareno, a 19-year-old
-        Mechanical Engineering student with an interest
-        in learning, personal growth, and developing
-        new skills.
-        <br><br>
-        I believe that every experience is an opportunity
-        to learn something new. Outside my academic life,
-        I enjoy playing chess, which allows me to develop
-        my strategic thinking and problem-solving skills.
+
+        My name is Niña Grace Nazareno, a 19-year-old
+        college student currently pursuing a Bachelor of
+        Science in Mechanical Engineering.
+
+        I am passionate about learning, gaining new
+        experiences, and continuously improving myself.
+        Outside my academic life, I enjoy playing chess,
+        which helps me develop strategic thinking,
+        patience, and problem-solving skills.
     </p>
     """, unsafe_allow_html=True)
 
-    st.markdown(
-        '<p style="color:#f5a6c8; font-weight:600;">MECHANICAL ENGINEERING STUDENT</p>',
-        unsafe_allow_html=True
-    )
 
-
+# -----------------------------------------
 # PERSONAL INFORMATION
+# -----------------------------------------
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
-st.markdown("## Personal Information")
+st.markdown(
+    '<div class="section-title">PERSONAL INFORMATION</div>',
+    unsafe_allow_html=True
+)
 
-info1, info2 = st.columns(2, gap="large")
+col1, col2 = st.columns(2, gap="large")
 
-with info1:
+with col1:
+
     st.markdown("""
-    <div class="profile-card">
-        <p class="info-label">Full Name</p>
-        <p class="info-value">Niña Grace Nazareno</p>
+    <div class="info-card">
+        <div class="info-label">Full Name</div>
+        <div class="info-value">Niña Grace Nazareno</div>
+    </div>
 
-        <p class="info-label">Age</p>
-        <p class="info-value">19 Years Old</p>
-
-        <p class="info-label">Location</p>
-        <p class="info-value">Bislig City, Philippines</p>
+    <div class="info-card">
+        <div class="info-label">Age</div>
+        <div class="info-value">19 Years Old</div>
     </div>
     """, unsafe_allow_html=True)
 
-with info2:
+with col2:
+
     st.markdown("""
-    <div class="profile-card">
-        <p class="info-label">Course</p>
-        <p class="info-value">
-            Bachelor of Science in Mechanical Engineering
-        </p>
+    <div class="info-card">
+        <div class="info-label">Address</div>
+        <div class="info-value">P3 Tabon, Bislig City</div>
+    </div>
 
-        <p class="info-label">Year Level</p>
-        <p class="info-value">2nd Year College</p>
-
-        <p class="info-label">Hobby</p>
-        <p class="info-value">Playing Chess</p>
+    <div class="info-card">
+        <div class="info-label">Hobby</div>
+        <div class="info-value">Playing Chess</div>
     </div>
     """, unsafe_allow_html=True)
 
 
+# -----------------------------------------
+# EDUCATIONAL BACKGROUND
+# -----------------------------------------
+st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+
+st.markdown(
+    '<div class="section-title">EDUCATIONAL BACKGROUND</div>',
+    unsafe_allow_html=True
+)
+
+st.markdown("""
+<div class="info-card">
+    <div class="info-label">Current Education</div>
+    <div class="info-value">
+        Bachelor of Science in Mechanical Engineering
+    </div>
+    <div style="color:#aaaaaa; margin-top:8px;">
+        Second Year College Student
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+
+# -----------------------------------------
 # ABOUT ME
+# -----------------------------------------
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
-st.markdown("## About Me")
+st.markdown(
+    '<div class="section-title">ABOUT ME</div>',
+    unsafe_allow_html=True
+)
 
 st.markdown("""
 <p class="description">
-    As a Mechanical Engineering student, I am continuously
-    exploring new knowledge and experiences that will help
-    me grow academically and personally. I value dedication,
-    critical thinking, and continuous improvement.
+    I am a dedicated Mechanical Engineering student who
+    values education, personal growth, and continuous
+    learning. I enjoy exploring new ideas and challenging
+    myself to improve my knowledge and abilities.
+
     <br><br>
-    My goal is to keep learning, enhance my abilities, and
-    prepare myself for future opportunities in the field
-    of engineering.
+
+    Playing chess is one of my favorite hobbies because
+    it encourages me to think critically, plan ahead,
+    and make thoughtful decisions. I aim to continue
+    developing my skills and preparing for future
+    opportunities in the engineering field.
 </p>
 """, unsafe_allow_html=True)
 
 
+# -----------------------------------------
 # FOOTER
+# -----------------------------------------
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
 st.markdown("""
 <div class="footer">
-    © 2026 Niña Grace Nazareno | Personal Profile
+    NIÑA GRACE NAZARENO
+    <br><br>
+    Personal Profile | 2026
     <br>
     Designed with Streamlit
 </div>
