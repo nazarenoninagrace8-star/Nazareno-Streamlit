@@ -263,24 +263,70 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# (name, description, moves as text, moves as (from, to) squares)
 OPENINGS = [
-    ("Italian Game", "A classic that develops pieces quickly and fights for the center."),
-    ("Sicilian Defense", "A popular reply to 1.e4 that leads to sharp, unbalanced play."),
-    ("Queen's Gambit", "White offers a pawn in order to gain control of the center."),
-    ("Ruy Lopez", "One of the oldest openings, built on steady, patient pressure."),
-    ("London System", "A solid setup that is easy to learn and hard to break down."),
-    ("Caro-Kann Defense", "A sturdy defense known for its reliable pawn structure."),
+    ("Italian Game",
+     "A classic that develops pieces quickly and fights for the center.",
+     "1. e4 e5  2. Nf3 Nc6  3. Bc4",
+     [("e2", "e4"), ("e7", "e5"), ("g1", "f3"), ("b8", "c6"), ("f1", "c4")]),
+    ("Ruy Lopez",
+     "One of the oldest openings, built on steady, patient pressure.",
+     "1. e4 e5  2. Nf3 Nc6  3. Bb5",
+     [("e2", "e4"), ("e7", "e5"), ("g1", "f3"), ("b8", "c6"), ("f1", "b5")]),
+    ("Sicilian Defense",
+     "A popular reply to 1.e4 that leads to sharp, unbalanced play.",
+     "1. e4 c5",
+     [("e2", "e4"), ("c7", "c5")]),
+    ("Queen's Gambit",
+     "White offers a pawn in order to gain control of the center.",
+     "1. d4 d5  2. c4",
+     [("d2", "d4"), ("d7", "d5"), ("c2", "c4")]),
+    ("London System",
+     "A solid setup that is easy to learn and hard to break down.",
+     "1. d4 d5  2. Nf3 Nf6  3. Bf4",
+     [("d2", "d4"), ("d7", "d5"), ("g1", "f3"), ("g8", "f6"), ("c1", "f4")]),
+    ("Caro-Kann Defense",
+     "A sturdy defense known for its reliable pawn structure.",
+     "1. e4 c6  2. d4 d5",
+     [("e2", "e4"), ("c7", "c6"), ("d2", "d4"), ("d7", "d5")]),
 ]
 if "opening_idx" not in st.session_state:
     st.session_state.opening_idx = 0
 
+GLYPHS = {"K": "♚", "Q": "♛", "R": "♜", "B": "♝", "N": "♞", "P": "♟"}
 
-def chessboard_html():
+
+def start_position():
+    pos = {}
+    back = ["R", "N", "B", "Q", "K", "B", "N", "R"]
+    for i, f in enumerate("abcdefgh"):
+        pos[f + "1"] = ("w", back[i])
+        pos[f + "2"] = ("w", "P")
+        pos[f + "7"] = ("b", "P")
+        pos[f + "8"] = ("b", back[i])
+    return pos
+
+
+def chessboard_html(pos):
     squares = ""
     for r in range(8):
         for c in range(8):
-            color = "#F3E3E5" if (r + c) % 2 == 0 else "#C98B94"
-            squares += f'<div style="background:{color}"></div>'
+            sq = "abcdefgh"[c] + str(8 - r)
+            bg = "#F3E3E5" if (r + c) % 2 == 0 else "#C98B94"
+            piece, color, shadow = "", "", ""
+            if sq in pos:
+                side, kind = pos[sq]
+                piece = GLYPHS[kind] + "\uFE0E"  # plain text glyph, not an emoji
+                if side == "w":
+                    color = "#FFFFFF"
+                    shadow = "text-shadow:0 0 2px #4A3B3F,0 0 2px #4A3B3F;"
+                else:
+                    color = "#4A3B3F"
+            squares += (
+                f'<div style="background:{bg};display:flex;align-items:center;'
+                f'justify-content:center;font-size:24px;line-height:1;'
+                f'color:{color};{shadow}">{piece}</div>'
+            )
     return (
         '<div style="display:grid;grid-template-columns:repeat(8,1fr);'
         "width:260px;height:260px;border:4px solid #4A3B3F;border-radius:8px;"
@@ -292,11 +338,15 @@ def chessboard_html():
 tab_chess, tab_goals, tab_hello = st.tabs(["Chess Corner", "Goals", "Say Hello"])
 
 with tab_chess:
+    name, desc, moves_text, moves = OPENINGS[st.session_state.opening_idx]
+    pos = start_position()
+    for src, dst in moves:
+        pos[dst] = pos.pop(src)
+
     c1, c2 = st.columns([1, 1.3], gap="large")
     with c1:
-        st.markdown(chessboard_html(), unsafe_allow_html=True)
+        st.markdown(chessboard_html(pos), unsafe_allow_html=True)
     with c2:
-        name, desc = OPENINGS[st.session_state.opening_idx]
         st.markdown(
             f"""
 <div class="section">
@@ -304,6 +354,8 @@ with tab_chess:
 <div class="section-title" style="margin-top:0.3rem">{name}</div>
 <hr class="rule">
 <p>{desc}</p>
+<div class="stat-label" style="margin-top:1rem">Moves</div>
+<p style="font-weight:500;color:#4A3B3F">{moves_text}</p>
 </div>
 """,
             unsafe_allow_html=True,
