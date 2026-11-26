@@ -1,8 +1,6 @@
 import base64
 from pathlib import Path
 
-import streamlit as st
-
 # ---------------------------------------------------------------- CONFIG
 st.set_page_config(
     page_title="Niña Grace Nazareno",
