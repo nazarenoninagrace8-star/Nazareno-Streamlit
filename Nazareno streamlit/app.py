@@ -1,467 +1,255 @@
-import streamlit as st
-
-st.header("Niña Grace Nazareno")
-
+import base64
+from pathlib import Path
 
 import streamlit as st
-from PIL import Image
 
-# ==========================================
-# PAGE CONFIGURATION
-# ==========================================
+# ---------------------------------------------------------------- CONFIG
 st.set_page_config(
-    page_title="Niña Grace | Personal Dashboard",
-    page_icon="♟️",
+    page_title="Niña Grace Nazareno",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed",
 )
 
-# ==========================================
-# PROFILE INFORMATION
-# ==========================================
-NAME = "Niña Grace Nazareno"
-AGE = 19
-ADDRESS = "P3 Tabon"
-COURSE = "Bachelor of Science in Mechanical Engineering"
-HOBBY = "Playing Chess"
+PROFILE = {
+    "name": "Niña Grace Nazareno",
+    "age": 19,
+    "address": "P3 Tabon",
+    "program": "Bachelor of Science in Mechanical Engineering",
+    "interest": "Chess",
+    "tagline": "Mechanical Engineering Student",
+    "about": (
+        "I am a 19-year-old Mechanical Engineering student who enjoys "
+        "understanding how things work and solving problems step by step. "
+        "Outside of the classroom, I love playing chess."
+    ),
+    "chess": (
+        "Chess teaches patience, planning, and thinking several moves ahead. "
+        "These are habits that also shape how I approach engineering problems."
+    ),
+}
 
-# ==========================================
-# CUSTOM CSS
-# ==========================================
-st.markdown("""
+# Put your photo in the same folder as this file and name it profile.jpg
+# (profile.jpeg / profile.png also work).
+IMAGE_CANDIDATES = ["profile.jpg", "profile.jpeg", "profile.png"]
+
+
+# ---------------------------------------------------------------- HELPERS
+def load_image_b64():
+    base = Path(__file__).parent
+    for name in IMAGE_CANDIDATES:
+        path = base / name
+        if path.exists():
+            mime = "image/png" if path.suffix.lower() == ".png" else "image/jpeg"
+            data = base64.b64encode(path.read_bytes()).decode()
+            return f"data:{mime};base64,{data}"
+    return None
+
+
+def initials(name):
+    parts = [p for p in name.split() if p]
+    return (parts[0][0] + parts[-1][0]).upper()
+
+
+# ---------------------------------------------------------------- STYLE
+st.markdown(
+    """
 <style>
-.stApp {
-    background-color: #f4f6fb;
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+    --bg: #FAF5F2;
+    --card: #FFFFFF;
+    --ink: #4A3B3F;
+    --muted: #8A7A7E;
+    --rose: #C98B94;
+    --rose-soft: #F3E3E5;
+    --sage: #8FA58F;
+    --sage-soft: #E6EEE6;
+    --line: #EADFDC;
 }
 
-[data-testid="stSidebar"] {
-    background-color: #172554;
+html, body, [class*="css"], .stApp {
+    font-family: 'Inter', sans-serif;
+    color: var(--ink);
+}
+.stApp { background: var(--bg); }
+
+#MainMenu, footer, header[data-testid="stHeader"] { visibility: hidden; height: 0; }
+.block-container { padding-top: 2.2rem; padding-bottom: 3rem; max-width: 1100px; }
+
+/* Hero */
+.hero {
+    display: flex; align-items: center; gap: 2.2rem;
+    background: linear-gradient(135deg, #FFFFFF 0%, #F8ECEE 100%);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: 2.2rem 2.6rem;
+    box-shadow: 0 8px 30px rgba(201, 139, 148, 0.10);
+}
+.avatar {
+    width: 150px; height: 150px; flex-shrink: 0;
+    border-radius: 50%;
+    border: 5px solid #FFFFFF;
+    box-shadow: 0 0 0 2px var(--rose), 0 10px 24px rgba(201, 139, 148, 0.25);
+    object-fit: cover;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--rose-soft);
+    color: var(--rose);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem; font-weight: 700; letter-spacing: 2px;
+}
+.hero-eyebrow {
+    font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--rose); font-weight: 600; margin-bottom: 0.4rem;
+}
+.hero-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.9rem; font-weight: 700; line-height: 1.1;
+    color: var(--ink); margin: 0;
+}
+.hero-sub { color: var(--muted); font-weight: 300; margin-top: 0.5rem; font-size: 1.02rem; }
+.pill-row { margin-top: 1.1rem; display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.pill {
+    padding: 0.35rem 0.95rem; border-radius: 999px; font-size: 0.8rem; font-weight: 500;
+    background: var(--rose-soft); color: #A8636E;
+}
+.pill.sage { background: var(--sage-soft); color: #5F7A5F; }
+
+/* Stat cards */
+.stat {
+    background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+    padding: 1.2rem 1.3rem; height: 100%;
+    box-shadow: 0 4px 16px rgba(74, 59, 63, 0.04);
+    border-top: 3px solid var(--rose);
+}
+.stat.sage { border-top-color: var(--sage); }
+.stat-label {
+    font-size: 0.68rem; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--muted); font-weight: 500;
+}
+.stat-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.55rem; font-weight: 700; margin-top: 0.25rem; line-height: 1.2;
 }
 
-[data-testid="stSidebar"] * {
-    color: white !important;
+/* Section cards */
+.section {
+    background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+    padding: 1.6rem 1.8rem; height: 100%;
+    box-shadow: 0 4px 16px rgba(74, 59, 63, 0.04);
 }
-
-.main-title {
-    color: #172554;
-    font-size: 36px;
-    font-weight: 800;
+.section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem; font-weight: 700; margin: 0 0 0.2rem 0;
 }
+.rule { width: 36px; height: 2px; background: var(--rose); border: 0; margin: 0.4rem 0 1rem 0; }
+.section p { color: #6B5D61; line-height: 1.75; font-weight: 300; margin: 0; }
 
-.subtitle {
-    color: #64748b;
-    font-size: 16px;
-}
+.row { display: flex; justify-content: space-between; gap: 1rem;
+       padding: 0.7rem 0; border-bottom: 1px dashed var(--line); font-size: 0.93rem; }
+.row:last-child { border-bottom: 0; }
+.row span:first-child { color: var(--muted); }
+.row span:last-child { font-weight: 500; text-align: right; }
 
-.profile-card {
-    background: white;
-    padding: 25px;
-    border-radius: 18px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-    margin-bottom: 15px;
-}
+.footer-note { text-align: center; color: var(--muted); font-size: 0.78rem;
+               letter-spacing: 1.5px; margin-top: 2.2rem; text-transform: uppercase; }
 
-.info-card {
-    background: white;
-    padding: 20px;
-    border-radius: 15px;
-    border-left: 5px solid #2563eb;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.05);
-}
-
-.big-number {
-    color: #1e3a8a;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.profile-name {
-    color: #172554;
-    font-size: 26px;
-    font-weight: bold;
-}
-
-div.stButton > button {
-    background-color: #2563eb;
-    color: white;
-    border-radius: 10px;
-    border: none;
-    padding: 10px 20px;
-}
-
-div.stButton > button:hover {
-    background-color: #1d4ed8;
-    color: white;
-}
-
-hr {
-    border-color: #e2e8f0;
+@media (max-width: 700px) {
+    .hero { flex-direction: column; text-align: center; padding: 1.8rem 1.4rem; }
+    .hero-name { font-size: 2.2rem; }
+    .pill-row { justify-content: center; }
 }
 </style>
-""", unsafe_allow_html=True)
-
-# ==========================================
-# SESSION STATE
-# ==========================================
-if "profile_image" not in st.session_state:
-    st.session_state.profile_image = None
-
-# ==========================================
-# SIDEBAR NAVIGATION
-# ==========================================
-with st.sidebar:
-
-    st.markdown("# ♟️ MY DASHBOARD")
-    st.markdown("---")
-
-    st.markdown("### Welcome!")
-    st.write("Niña Grace Nazareno")
-
-    page = st.radio(
-        "NAVIGATION",
-        [
-            "🏠 Home",
-            "👤 My Profile",
-            "🎓 Education",
-            "♟️ My Interests",
-            "ℹ️ About Me"
-        ]
-    )
-
-    st.markdown("---")
-    st.caption("PERSONAL PORTFOLIO")
-    st.caption("© 2026 Niña Grace Nazareno")
-
-# ==========================================
-# HOME DASHBOARD
-# ==========================================
-if page == "🏠 Home":
-
-    st.markdown(
-        '<div class="main-title">Welcome to My Dashboard!</div>',
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        '<div class="subtitle">Your personal space to know more about me.</div>',
-        unsafe_allow_html=True
-    )
-
-    st.write("")
-    st.markdown("---")
-
-    col1, col2 = st.columns([1, 2])
-
-    with col1:
-
-        st.markdown('<div class="profile-card">', unsafe_allow_html=True)
-
-        if st.session_state.profile_image:
-            st.image(
-                st.session_state.profile_image,
-                width=180
-            )
-        else:
-            st.image(
-                "https://placehold.co/300x300/e2e8f0/172554?text=My+Photo",
-                width=180
-            )
-
-        st.markdown(
-            f'<div class="profile-name">{NAME}</div>',
-            unsafe_allow_html=True
-        )
-
-        st.write("Mechanical Engineering Student")
-        st.caption("♟️ Chess Enthusiast")
-
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    with col2:
-
-        st.markdown("### 👋 Hello, welcome!")
-
-        st.write(
-            f"""
-            Hi! I am **{NAME}**, a {AGE}-year-old
-            student from **{ADDRESS}**.
-
-            I am currently pursuing a **{COURSE}**.
-
-            Aside from my academic journey, I enjoy
-            playing chess, which helps me develop
-            my strategic thinking, patience, and
-            problem-solving skills.
-
-            Welcome to my personal dashboard!
-            """
-        )
-
-    st.write("")
-    st.markdown("### 📊 Personal Overview")
-
-    c1, c2, c3 = st.columns(3)
-
-    with c1:
-        st.markdown(
-            '<div class="info-card">'
-            '<h4>👤 Age</h4>'
-            '<div class="big-number">19 Years Old</div>'
-            '</div>',
-            unsafe_allow_html=True
-        )
-
-    with c2:
-        st.markdown(
-            '<div class="info-card">'
-            '<h4>🎓 Education</h4>'
-            '<div class="big-number">BSME</div>'
-            '</div>',
-            unsafe_allow_html=True
-        )
-
-    with c3:
-        st.markdown(
-            '<div class="info-card">'
-            '<h4>♟️ Favorite Hobby</h4>'
-            '<div class="big-number">Chess</div>'
-            '</div>',
-            unsafe_allow_html=True
-        )
-
-# ==========================================
-# MY PROFILE
-# ==========================================
-elif page == "👤 My Profile":
-
-    st.markdown(
-        '<div class="main-title">👤 My Profile</div>',
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        '<div class="subtitle">Get to know me and my personal information.</div>',
-        unsafe_allow_html=True
-    )
-
-    st.markdown("---")
-
-    left, right = st.columns([1, 2])
-
-    with left:
-
-        st.markdown("### Profile Picture")
-
-        uploaded_image = st.file_uploader(
-            "Upload your picture",
-            type=["jpg", "jpeg", "png"]
-        )
-
-        if uploaded_image:
-            st.session_state.profile_image = Image.open(
-                uploaded_image
-            ).copy()
-
-        if st.session_state.profile_image:
-            st.image(
-                st.session_state.profile_image,
-                width=250
-            )
-        else:
-            st.image(
-                "https://placehold.co/400x400/e2e8f0/172554?text=Upload+Your+Photo",
-                width=250
-            )
-
-        st.caption("Upload your own photo to use as your profile picture.")
-
-    with right:
-
-        st.markdown("### Personal Information")
-
-        st.markdown(
-            f'<div class="profile-name">{NAME}</div>',
-            unsafe_allow_html=True
-        )
-
-        st.markdown("---")
-
-        st.write("**🎂 Age:** 19 years old")
-        st.write("**📍 Address:** P3 Tabon")
-        st.write("**🎓 Course:** Bachelor of Science in Mechanical Engineering")
-        st.write("**♟️ Favorite Hobby:** Playing Chess")
-
-        st.markdown("---")
-
-        st.markdown("### About My Personality")
-
-        st.write(
-            """
-            I am a student who enjoys learning new things
-            and developing my skills. I value education,
-            patience, creativity, and continuous improvement.
-
-            I also love playing chess because it challenges
-            me to think critically and make strategic decisions.
-            """
-        )
-
-# ==========================================
-# EDUCATION
-# ==========================================
-elif page == "🎓 Education":
-
-    st.markdown(
-        '<div class="main-title">🎓 Educational Background</div>',
-        unsafe_allow_html=True
-    )
-
-    st.markdown("---")
-
-    st.markdown("### My Academic Journey")
-
-    st.markdown(
-        '<div class="profile-card">',
-        unsafe_allow_html=True
-    )
-
-    st.subheader("🏛️ College")
-
-    st.markdown("**Bachelor of Science in Mechanical Engineering**")
-
-    st.write("Currently pursuing my college education.")
-
-    st.info(
-        "My goal is to gain knowledge, improve my engineering "
-        "skills, and prepare for my future career."
-    )
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown("### My Academic Goals")
-
-    st.write("- Develop technical and engineering skills.")
-    st.write("- Improve my problem-solving abilities.")
-    st.write("- Learn new technologies.")
-    st.write("- Become a successful mechanical engineer.")
-
-# ==========================================
-# MY INTERESTS
-# ==========================================
-elif page == "♟️ My Interests":
-
-    st.markdown(
-        '<div class="main-title">♟️ My Hobbies and Interests</div>',
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        '<div class="subtitle">Things I enjoy doing in my free time.</div>',
-        unsafe_allow_html=True
-    )
-
-    st.markdown("---")
-
-    col1, col2 = st.columns([1, 1])
-
-    with col1:
-
-        st.image(
-            "https://images.unsplash.com/photo-1586165368502-1bad197a6461?w=800",
-            use_container_width=True
-        )
-
-    with col2:
-
-        st.markdown("### ♟️ Playing Chess")
-
-        st.write(
-            """
-            One of my favorite hobbies is playing chess.
-
-            Chess is more than just a game for me.
-            It teaches me to think ahead, analyze situations,
-            develop strategies, and make smart decisions.
-
-            It also helps me practice patience,
-            concentration, and critical thinking.
-            """
-        )
-
-        st.success("Favorite Hobby: Chess")
-
-    st.markdown("---")
-
-    st.markdown("### Skills I Develop Through Chess")
-
-    a, b, c = st.columns(3)
-
-    with a:
-        st.markdown("### 🧠")
-        st.write("Critical Thinking")
-
-    with b:
-        st.markdown("### 🎯")
-        st.write("Strategic Planning")
-
-    with c:
-        st.markdown("### ⏳")
-        st.write("Patience")
-
-# ==========================================
-# ABOUT ME
-# ==========================================
-elif page == "ℹ️ About Me":
-
-    st.markdown(
-        '<div class="main-title">ℹ️ About Me</div>',
-        unsafe_allow_html=True
-    )
-
-    st.markdown("---")
-
-    st.markdown(
-        f"""
-        ### Hello! I am {NAME}.
-
-        I am {AGE} years old and currently living in
-        {ADDRESS}.
-
-        I am taking up **{COURSE}**.
-
-        I consider myself a person who enjoys learning,
-        exploring new ideas, and improving my abilities.
-
-        Outside academics, I love playing chess because
-        it allows me to challenge myself and strengthen
-        my strategic thinking.
-
-        ### My Personal Goal
-
-        To become a knowledgeable, skilled, and successful
-        mechanical engineer while continuously growing
-        as an individual.
-
-        ### My Motto
-
-        *"Every move is a decision, and every decision
-        is an opportunity to learn and grow."*
-        """
-    )
-
-    st.markdown("---")
-
-    st.markdown("### Thank you for visiting my dashboard! 💙")
-
-# ==========================================
-# FOOTER
-# ==========================================
-st.markdown("---")
+""",
+    unsafe_allow_html=True,
+)
+
+# ---------------------------------------------------------------- HERO
+img = load_image_b64()
+if img:
+    avatar_html = f'<img class="avatar" src="{img}" alt="Profile picture">'
+else:
+    avatar_html = f'<div class="avatar">{initials(PROFILE["name"])}</div>'
 
 st.markdown(
-    "<center style='color:gray;'>"
-    "Designed with 💙 using Python and Streamlit"
-    "<br>Niña Grace Nazareno © 2026"
-    "</center>",
-    unsafe_allow_html=True
+    f"""
+<div class="hero">
+{avatar_html}
+<div>
+<div class="hero-eyebrow">My Profile</div>
+<h1 class="hero-name">{PROFILE["name"]}</h1>
+<div class="hero-sub">{PROFILE["tagline"]}</div>
+<div class="pill-row">
+<span class="pill">{PROFILE["age"]} years old</span>
+<span class="pill">{PROFILE["address"]}</span>
+<span class="pill sage">{PROFILE["interest"]}</span>
+</div>
+</div>
+</div>
+""",
+    unsafe_allow_html=True,
+)
+
+st.write("")
+
+# ---------------------------------------------------------------- STAT CARDS
+stats = [
+    ("Age", f'{PROFILE["age"]} years old', ""),
+    ("Location", PROFILE["address"], "sage"),
+    ("Program", "BS Mechanical Engineering", ""),
+    ("Favorite Pastime", PROFILE["interest"], "sage"),
+]
+cols = st.columns(4, gap="medium")
+for col, (label, value, variant) in zip(cols, stats):
+    with col:
+        st.markdown(
+            f"""
+<div class="stat {variant}">
+<div class="stat-label">{label}</div>
+<div class="stat-value">{value}</div>
+</div>
+""",
+            unsafe_allow_html=True,
+        )
+
+st.write("")
+
+# ---------------------------------------------------------------- DETAILS
+left, right = st.columns([1.15, 1], gap="medium")
+
+with left:
+    st.markdown(
+        f"""
+<div class="section">
+<div class="section-title">About Me</div>
+<hr class="rule">
+<p>{PROFILE["about"]}</p>
+<div style="height:1.4rem"></div>
+<div class="section-title">Beyond the Classroom</div>
+<hr class="rule">
+<p>{PROFILE["chess"]}</p>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
+
+with right:
+    st.markdown(
+        f"""
+<div class="section">
+<div class="section-title">Personal Details</div>
+<hr class="rule">
+<div class="row"><span>Full Name</span><span>{PROFILE["name"]}</span></div>
+<div class="row"><span>Age</span><span>{PROFILE["age"]}</span></div>
+<div class="row"><span>Address</span><span>{PROFILE["address"]}</span></div>
+<div class="row"><span>Course</span><span>{PROFILE["program"]}</span></div>
+<div class="row"><span>Interest</span><span>{PROFILE["interest"]}</span></div>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
+
+st.markdown(
+    '<div class="footer-note">Niña Grace Nazareno &nbsp;|&nbsp; Student Profile</div>',
+    unsafe_allow_html=True,
 )
